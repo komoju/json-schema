@@ -5,8 +5,12 @@ module JSON
   class Schema
     class AdditionalPropertiesAttribute < Attribute
       def self.validate(current_schema, data, fragments, processor, validator, options = {})
+        return unless data.is_a?(Hash)
+
         schema = current_schema.schema
-        return unless data.is_a?(Hash) && (schema['type'].nil? || schema['type'] == 'object')
+        unless schema['type'].nil?
+          return unless schema['type'].is_a?(Array) ? schema['type'].include?("object") : schema['type'] == "object"
+        end
 
         extra_properties = remove_valid_properties(data.keys, current_schema, validator)
 
